@@ -49,19 +49,21 @@ func parseAndEvaluate(_ tokens: [String]) -> String? {
     var tks: [String] = tokens
     
     while tks.count > 1 {
-        if let token = tks.enumerated().first(where: { isOperator($0.element) }) {
-            if token.offset - 1 < 0 || token.offset + 1 > tks.count - 1 {
+        
+        if let op = tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
+            
+            if op.offset - 1 < 0 || op.offset + 1 > tks.count - 1 {
                 return nil // missing operand
             }
             
-            let operationResult = performOperation(tks[token.offset-1], operatorSymbol: token.element, tks[token.offset+1])
+            let operationResult = performOperation(tks[op.offset-1], operatorSymbol: op.element, tks[op.offset+1])
             
             if operationResult == nil {
                 return nil // invalid operation
             }
             
-            tks.remove(atOffsets: [token.offset, token.offset+1])
-            tks[token.offset-1] = operationResult!
+            tks.remove(atOffsets: [op.offset, op.offset+1])
+            tks[op.offset-1] = operationResult!
         } else {
             return nil // not enough operators
         }
@@ -102,7 +104,7 @@ func performOperation(_ operand1: String, operatorSymbol: String, _ operand2: St
 }
 
 struct ContentView: View {
-    @State var expression: String = "-1 + -1 + 5"
+    @State var expression: String = "1 + 2 * 5 - 9 / 3"
     
     var body: some View {
         VStack {
