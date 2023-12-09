@@ -88,11 +88,7 @@ func performOperation(_ operand1: String, operatorSymbol: String, _ operand2: St
         case "*":
             return String(num1 * num2)
         case "/":
-            if num2 != 0 {
-                return String(num1 / num2)
-            } else {
-                return nil  // Division by zero
-            }
+            return num2 != 0 ? String(num1 / num2) : nil
         case "^":
             return String(pow(num1, num2))
         default:
