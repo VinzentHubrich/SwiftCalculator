@@ -17,7 +17,6 @@ func evaluateMathExpression(_ expression: String) -> String? {
     return result
 }
 
-// Step 1: Tokenize the expression
 func tokenize(_ expression: String) -> [String] {
     var tokens: [String] = []
     var currentToken = ""
@@ -44,13 +43,12 @@ func tokenize(_ expression: String) -> [String] {
     return tokens
 }
 
-// Step 2: Parse and evaluate the expression
 func parseAndEvaluate(_ tokens: [String]) -> String? {
     var tks: [String] = tokens
     
     while tks.count > 1 {
         
-        if let op = tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
+        if let op = tks.enumerated().first(where: { $0.element == "^" }) ?? tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
             
             if op.offset - 1 < 0 || op.offset + 1 > tks.count - 1 {
                 return nil // missing operand
@@ -77,7 +75,7 @@ func parseAndEvaluate(_ tokens: [String]) -> String? {
 }
 
 func isOperator(_ token: String) -> Bool {
-    return token == "+" || token == "-" || token == "*" || token == "/"
+    return token == "+" || token == "-" || token == "*" || token == "/" || token == "^"
 }
 
 func performOperation(_ operand1: String, operatorSymbol: String, _ operand2: String) -> String? {
@@ -95,6 +93,8 @@ func performOperation(_ operand1: String, operatorSymbol: String, _ operand2: St
             } else {
                 return nil  // Division by zero
             }
+        case "^":
+            return String(pow(num1, num2))
         default:
             return nil  // Invalid operator
         }
@@ -104,7 +104,7 @@ func performOperation(_ operand1: String, operatorSymbol: String, _ operand2: St
 }
 
 struct ContentView: View {
-    @State var expression: String = "1 + 2 * 5 - 9 / 3"
+    @State var expression: String = "2 + 2 ^ 4 / 4"
     
     var body: some View {
         VStack {
