@@ -47,8 +47,20 @@ func parseAndEvaluate(_ tokens: [String]) -> String? {
     var tks: [String] = tokens
     
     while tks.count > 1 {
-        
-        if let op = tks.enumerated().first(where: { $0.element == "^" }) ?? tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
+        if let openingParenthesisIndex = tks.lastIndex(where: { $0 == "(" }) {
+            if let closingParenthesisIndex = tks.enumerated().first(where: { $0.offset > openingParenthesisIndex && $0.element == ")" })?.offset {
+                if openingParenthesisIndex + 1 > closingParenthesisIndex - 1 {
+                    tks.remove(atOffsets: [openingParenthesisIndex, closingParenthesisIndex])
+                } else if let expr = parseAndEvaluate(Array(tks[openingParenthesisIndex+1...closingParenthesisIndex-1])) {
+                    tks.removeSubrange(openingParenthesisIndex..<closingParenthesisIndex)
+                    tks[openingParenthesisIndex] = expr
+                } else {
+                    return nil // invalid expression within parentheses
+                }
+            } else {
+                return nil // missing closing parenthesis ')'
+            }
+        } else if let op = tks.enumerated().first(where: { $0.element == "^" }) ?? tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
             
             if op.offset - 1 < 0 || op.offset + 1 > tks.count - 1 {
                 return nil // missing operand
@@ -68,10 +80,10 @@ func parseAndEvaluate(_ tokens: [String]) -> String? {
     }
     
     if tks.first == nil {
-        return nil // empty expression
+        return "0" // empty expression
     }
 
-    return isOperator(tks.first!) ? nil : tks.first
+    return isOperator(tks.first!) || tks.first! == "(" || tks.first! == ")" ? nil : tks.first
 }
 
 func isOperator(_ token: String) -> Bool {
@@ -100,7 +112,7 @@ func performOperation(_ operand1: String, operatorSymbol: String, _ operand2: St
 }
 
 struct ContentView: View {
-    @State var expression: String = "2 + 2 ^ 4 / 4"
+    @State var expression: String = "(((4+2)*(7-3^3)^2)+(10/2))*(5^2-1)"
     
     var body: some View {
         VStack {
