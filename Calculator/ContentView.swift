@@ -53,7 +53,17 @@ func parseAndEvaluate(_ tokens: [String]) -> String? {
                     tks.remove(atOffsets: [openingParenthesisIndex, closingParenthesisIndex])
                 } else if let expr = parseAndEvaluate(Array(tks[openingParenthesisIndex+1...closingParenthesisIndex-1])) {
                     tks.removeSubrange(openingParenthesisIndex..<closingParenthesisIndex)
-                    tks[openingParenthesisIndex] = expr
+                    
+                    if openingParenthesisIndex > 0 && tks[openingParenthesisIndex-1] == "-" {
+                        if openingParenthesisIndex > 1 && tks[openingParenthesisIndex-2] == ")" {
+                            tks[openingParenthesisIndex] = expr
+                        } else {
+                            tks.remove(at: openingParenthesisIndex)
+                            tks[openingParenthesisIndex-1] = String(-Double(expr)!)
+                        }
+                    } else {
+                        tks[openingParenthesisIndex] = expr
+                    }
                 } else {
                     return nil // invalid expression within parentheses
                 }
@@ -112,7 +122,7 @@ func performOperation(_ operand1: String, operatorSymbol: String, _ operand2: St
 }
 
 struct ContentView: View {
-    @State var expression: String = "(((4+2)*(7-3^3)^2)+(10/2))*(5^2-1)"
+    @State var expression: String = "0--(-(1+1)--(2+-(-2)))"
     
     var body: some View {
         VStack {
