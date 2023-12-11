@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var expression: String = "0--(-(1+1)--(2+-(-2)))"
+    @State var expression: String = "<sqrt>(5+<sqrt>16)"
     
     var body: some View {
         VStack {

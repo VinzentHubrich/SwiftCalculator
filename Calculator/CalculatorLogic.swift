@@ -25,12 +25,20 @@ private func tokenize(_ expression: String) -> [String] {
         if (char.isNumber || char == ".") || (char == "-" && currentToken.isEmpty) {
             currentToken.append(char)
         } else {
-            if !currentToken.isEmpty {
+            if !currentToken.isEmpty && currentToken.first != "<" {
                 tokens.append(currentToken)
                 currentToken = ""
             }
-
-            if char != " " {
+            
+            if char == "<" {
+                currentToken.append(char)
+            } else if char == ">" {
+                currentToken.append(char)
+                tokens.append(currentToken)
+                currentToken = ""
+            } else if !currentToken.isEmpty && currentToken.first == "<" {
+                currentToken.append(char)
+            } else if char != " " {
                 tokens.append(String(char))
             }
         }
@@ -70,6 +78,22 @@ private func parseAndEvaluate(_ tokens: [String]) -> String? {
             } else {
                 return nil // missing closing parenthesis ')'
             }
+            
+        } else if let elemFuncIndex = tks.lastIndex(where: { isElementaryFunction($0) }) {
+            
+            if elemFuncIndex + 1 > tks.count - 1 {
+                return nil // missing parameter
+            }
+            
+            let elemFuncResult = applyElementaryFunction(function: tks[elemFuncIndex], tks[elemFuncIndex+1])
+            
+            if elemFuncResult == nil {
+                return nil // couldn't apply the function
+            }
+            
+            tks.remove(at: elemFuncIndex+1)
+            tks[elemFuncIndex] = elemFuncResult!
+            
         } else if let op = tks.enumerated().first(where: { $0.element == "^" }) ?? tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
             
             if op.offset - 1 < 0 || op.offset + 1 > tks.count - 1 {
@@ -84,6 +108,7 @@ private func parseAndEvaluate(_ tokens: [String]) -> String? {
             
             tks.remove(atOffsets: [op.offset, op.offset+1])
             tks[op.offset-1] = operationResult!
+            
         } else {
             return nil // not enough operators
         }
@@ -92,8 +117,8 @@ private func parseAndEvaluate(_ tokens: [String]) -> String? {
     if tks.first == nil {
         return "0" // empty expression
     }
-
-    return isOperator(tks.first!) || tks.first! == "(" || tks.first! == ")" ? nil : tks.first
+    
+    return Double(tks.first!) == nil || isOperator(tks.first!) || isElementaryFunction(tks.first!) || tks.first! == "(" || tks.first! == ")" ? nil : tks.first
 }
 
 private func isOperator(_ token: String) -> Bool {
@@ -118,5 +143,22 @@ private func performOperation(_ operand1: String, operatorSymbol: String, _ oper
         }
     } else {
         return nil  // Invalid operands
+    }
+}
+
+private func isElementaryFunction(_ token: String) -> Bool {
+    return token == "<sqrt>"
+}
+
+private func applyElementaryFunction(function: String, _ parameter: String) -> String? {
+    if let param = Double(parameter) {
+        switch function {
+        case "<sqrt>":
+            return String(param.squareRoot())
+        default:
+            return nil // Invalid elementary function
+        }
+    } else {
+        return nil // Invalid parameter
     }
 }
