@@ -11,10 +11,35 @@ struct ContentView: View {
     @State var expression: String = ""
     
     private func handleInput(_ key: String) {
+        if expression.isEmpty {
+            if key == "." {
+                expression.append("0")
+            } else if key == "+" || key == "*" || key == "/" || key == "0" {
+                return
+            }
+        } else {
+            if key == "." && Double(String(expression.last!)) == nil { return }
+            
+            if isOperator(key) && isOperator(String(expression.last!)) {
+                if expression.count > 2 && isOperator(String(expression[expression.index(expression.endIndex, offsetBy: -2)])) {
+                    if key == "/" || key == "*" {
+                        expression.removeLast(2)
+                    } else if key == "-" || key == "+" {
+                        expression.removeLast()
+                        return
+                    }
+                } else if !(key == "-" && (expression.last! == "/" || expression.last! == "*")) {
+                    expression.removeLast()
+                }
+            }
+        }
+        
         expression.append(key)
     }
     
     private func calculate() {
+        if expression.isEmpty { return }
+        
         if let result = evaluateMathExpression(expression) {
             expression = result
         } else {
@@ -23,10 +48,10 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .trailing) {
             Text(expression.isEmpty ? "0" : expression)
                 .foregroundStyle(.white)
-                .font(.system(.largeTitle))
+                .font(.system(size: 50, weight: .light))
             
             Spacer()
             

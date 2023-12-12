@@ -121,7 +121,7 @@ private func parseAndEvaluate(_ tokens: [String]) -> String? {
     return Double(tks.first!) == nil || isOperator(tks.first!) || isElementaryFunction(tks.first!) || tks.first! == "(" || tks.first! == ")" ? nil : tks.first
 }
 
-private func isOperator(_ token: String) -> Bool {
+func isOperator(_ token: String) -> Bool {
     return token == "+" || token == "-" || token == "*" || token == "/" || token == "^"
 }
 
