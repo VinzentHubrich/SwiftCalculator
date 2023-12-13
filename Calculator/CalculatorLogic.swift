@@ -22,7 +22,7 @@ private func tokenize(_ expression: String) -> [String] {
     var currentToken = ""
 
     for char in expression {
-        if (char.isNumber || char == ".") || (char == "-" && currentToken.isEmpty) {
+        if (char.isNumber || char == "." || char == "e" || (!currentToken.isEmpty && currentToken.last == "e" && (char == "+" || char == "-"))) || (char == "-" && currentToken.isEmpty) {
             currentToken.append(char)
         } else {
             if !currentToken.isEmpty && currentToken.first != "<" {
@@ -129,15 +129,15 @@ private func performOperation(_ operand1: String, operatorSymbol: String, _ oper
     if let num1 = Double(operand1), let num2 = Double(operand2) {
         switch operatorSymbol {
         case "+":
-            return String(format: "%g", num1 + num2)
+            return String(num1 + num2)
         case "-":
-            return String(format: "%g", num1 - num2)
+            return String(num1 - num2)
         case "*":
-            return String(format: "%g", num1 * num2)
+            return String(num1 * num2)
         case "/":
-            return num2 != 0 ? String(format: "%g", num1 / num2) : nil
+            return num2 != 0 ? String(num1 / num2) : nil
         case "^":
-            return String(format: "%g", pow(num1, num2))
+            return String(pow(num1, num2))
         default:
             return nil  // Invalid operator
         }

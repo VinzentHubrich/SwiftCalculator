@@ -41,7 +41,7 @@ struct ContentView: View {
         if expression.isEmpty { return }
         
         if let result = evaluateMathExpression(expression) {
-            expression = result
+            expression = String(format: "%g", Double(result)!)
         } else {
             print("Invalid expression")
         }
