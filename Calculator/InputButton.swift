@@ -37,11 +37,11 @@ struct InputButton: View {
     func backgroundColor() -> Color {
         switch type {
         case .Number:
-            return Color(white: 0.35)
+            return Color(white: 0.30)
         case .Operation:
-            return Color(red: 0.95, green: 0.62, blue: 0.05)
+            return Color(red: 0.9, green: 0.6, blue: 0.03)
         case .Other:
-            return Color(white: 0.6)
+            return Color(white: 0.55)
         }
     }
 }
