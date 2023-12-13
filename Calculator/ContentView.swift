@@ -57,9 +57,9 @@ struct ContentView: View {
             
             VStack(alignment: .trailing) {
                 HStack {
-                    InputButton("AC", .Other) { expression.removeAll() }
-                    InputButton("", .Other) {  }
-                    InputButton("", .Other) {  }
+                    InputButton("C", .Other) { expression.removeAll() }
+                    InputButton("(", .Other) { handleInput("(") }
+                    InputButton(")", .Other) { handleInput(")") }
                     InputButton(":", .Operation) { handleInput("/") }
                     
                 }
@@ -86,7 +86,7 @@ struct ContentView: View {
                 HStack {
                     InputButton("0", .Number) { handleInput("0") }
                     InputButton(".", .Number) { handleInput(".") }
-                    InputButton("C", .Number) { _ = expression.popLast() }
+                    InputButton("DEL", .Number) { _ = expression.popLast() }
                     InputButton("=", .Operation) { calculate() }
                 }
             }
@@ -95,8 +95,6 @@ struct ContentView: View {
         .background(Color.black)
     }
 }
-
-
 
 #Preview {
     ContentView()
