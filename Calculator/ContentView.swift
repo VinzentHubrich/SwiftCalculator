@@ -10,7 +10,16 @@ import SwiftUI
 struct ContentView: View {
     @State var expression: String = ""
     
+    @State private var displayingResult: Bool = false
+    
     private func handleInput(_ key: String) {
+        if displayingResult {
+            if !isOperator(key) {
+                expression.removeAll()
+            }
+            displayingResult = false
+        }
+        
         if expression.isEmpty {
             if key == "." {
                 expression.append("0")
@@ -42,6 +51,7 @@ struct ContentView: View {
         
         if let result = evaluateMathExpression(expression) {
             expression = String(format: "%g", Double(result)!)
+            displayingResult = true
         } else {
             print("Invalid expression")
         }
