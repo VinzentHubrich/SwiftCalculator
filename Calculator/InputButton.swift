@@ -25,10 +25,10 @@ struct InputButton: View {
     var body: some View {
         Button(action: action) {
             Text(key)
-                .font(.system(size: 30))
+                .font(.system(size: 32))
                 .fontWeight(.medium)
-                .foregroundStyle(.white)
-                .frame(width: 80, height: 80)
+                .foregroundStyle(self.type == .Other ? .black : .white)
+                .frame(width: 80, height: 70)
                 .background(backgroundColor())
                 .cornerRadius(100)
         }
@@ -41,7 +41,7 @@ struct InputButton: View {
         case .Operation:
             return Color(red: 0.9, green: 0.6, blue: 0.03)
         case .Other:
-            return Color(white: 0.55)
+            return Color(white: 0.7)
         }
     }
 }
