@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+private let symbolReplacements = ["/": "÷",
+                                  "*": "∙",
+                                  "-": "−",
+                                  "(": "⟮",
+                                  ")": "⟯",
+                                  "<sqrt>": "√",
+                                  "x": "𝑥"]
+
 struct ContentView: View {
     @State var expression: String = ""
     
@@ -46,6 +54,16 @@ struct ContentView: View {
         expression.append(key)
     }
     
+    private func formatExpression(_ expression: String) -> String {
+        var expr = expression
+        
+        for (symbol, replacement) in symbolReplacements {
+            expr = expr.replacingOccurrences(of: symbol, with: replacement)
+        }
+        
+        return expr
+    }
+    
     private func calculate() {
         if expression.isEmpty { return }
         
@@ -61,7 +79,7 @@ struct ContentView: View {
         VStack {
             HStack {
                 Spacer()
-                Text(expression.isEmpty ? "0" : expression)
+                Text(expression.isEmpty ? "0" : formatExpression(expression))
                     .foregroundStyle(.white)
                     .font(.system(size: 50, weight: .light))
             }
@@ -75,6 +93,10 @@ struct ContentView: View {
                     Button("", systemImage: "x.squareroot", action: { handleInput("<sqrt>") })
                         .imageScale(.large)
                         .foregroundStyle(.white)
+                    Button("𝑥", action: { handleInput("x") })
+                        .imageScale(.large)
+                        .font(.title)
+                        .foregroundStyle(.white)
                 }
                 HStack {
                     InputButton("C", .Other) { expression.removeAll() }
@@ -83,7 +105,7 @@ struct ContentView: View {
                     Spacer()
                     InputButton(")", .Other) { handleInput(")") }
                     Spacer()
-                    InputButton(":", .Operation) { handleInput("/") }
+                    InputButton("÷", .Operation) { handleInput("/") }
                 }
                 HStack {
                     InputButton("7", .Number) { handleInput("7") }
@@ -92,7 +114,7 @@ struct ContentView: View {
                     Spacer()
                     InputButton("9", .Number) { handleInput("9") }
                     Spacer()
-                    InputButton("x", .Operation) { handleInput("*") }
+                    InputButton("×", .Operation) { handleInput("*") }
                 }
                 HStack {
                     InputButton("4", .Number) { handleInput("4") }
@@ -101,7 +123,7 @@ struct ContentView: View {
                     Spacer()
                     InputButton("6", .Number) { handleInput("6") }
                     Spacer()
-                    InputButton("-", .Operation) { handleInput("-") }
+                    InputButton("−", .Operation) { handleInput("-") }
                 }
                 HStack {
                     InputButton("1", .Number) { handleInput("1") }
@@ -110,7 +132,7 @@ struct ContentView: View {
                     Spacer()
                     InputButton("3", .Number) { handleInput("3") }
                     Spacer()
-                    InputButton("+", .Operation) { handleInput("+") }
+                    InputButton("＋", .Operation) { handleInput("+") }
                 }
                 HStack {
                     InputButton("0", .Number) { handleInput("0") }
