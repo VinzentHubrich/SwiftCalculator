@@ -93,9 +93,11 @@ struct ContentView: View {
                     Button("", systemImage: "x.squareroot", action: { handleInput("<sqrt>") })
                         .imageScale(.large)
                         .foregroundStyle(.white)
+                    Button("^", action: { handleInput("^") })
+                        .font(.title2)
+                        .foregroundStyle(.white)
                     Button("𝑥", action: { handleInput("x") })
-                        .imageScale(.large)
-                        .font(.title)
+                        .font(.title2)
                         .foregroundStyle(.white)
                 }
                 HStack {
