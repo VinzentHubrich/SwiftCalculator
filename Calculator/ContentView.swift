@@ -142,7 +142,7 @@ struct ContentView: View {
                     Spacer()
                     InputButton(".", .Number) { handleInput(".") }
                     Spacer()
-                    InputButton("DEL", .Number) { if expression.popLast() == ">" { while expression.popLast() != "<" {}} }
+                    InputButton("delete.backward.fill", showsSystemImage: true, .Number) { if expression.popLast() == ">" { while expression.popLast() != "<" {}} }
                     Spacer()
                     InputButton("=", .Operation) { calculate() }
                 }
