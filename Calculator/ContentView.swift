@@ -18,7 +18,7 @@ private let symbolReplacements = ["/": "÷",
 
 struct ContentView: View {
     @State var expression: String = ""
-    
+    @State var shakeExpression: Bool = false
     @State private var displayingResult: Bool = false
     
     private func handleInput(_ key: String) {
@@ -73,7 +73,7 @@ struct ContentView: View {
             expression = String(format: "%g", Double(result)!)
             displayingResult = true
         } else {
-            print("Invalid expression")
+            withAnimation(Animation.bouncy(duration: 0.3), { self.shakeExpression.toggle() })
         }
     }
     
@@ -84,6 +84,7 @@ struct ContentView: View {
                 Text(expression.isEmpty ? "0" : formatExpression(expression))
                     .foregroundStyle(.white)
                     .font(.system(size: 50, weight: .light))
+                    .modifier(ShakeEffect(animatableData: CGFloat(self.shakeExpression ? 1 : 0)))
             }
             .padding()
             
@@ -150,6 +151,20 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
+    }
+}
+
+struct ShakeEffect: GeometryEffect {
+    var animatableData: CGFloat
+    
+    func modifier(_ x: CGFloat) -> CGFloat {
+        3.5 * sin(x * .pi * 4)
+    }
+    
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        let transform = ProjectionTransform(CGAffineTransform(translationX: modifier(animatableData), y: 0))
+        
+        return transform
     }
 }
 
