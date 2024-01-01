@@ -7,6 +7,8 @@
 
 import Foundation
 
+var history: [(String, String)] = []
+
 public func evaluateMathExpression(_ expression: String) -> String? {
     // Step 1: Tokenize the expression
     let tokens = tokenize(expression)
@@ -21,7 +23,7 @@ private func tokenize(_ expression: String) -> [String] {
     var tokens: [String] = []
     var currentToken = ""
 
-    for char in expression {
+    for char in expression.replacingOccurrences(of: "<ans>", with: history.last?.1 ?? "invalid") {
         if (char.isNumber || char == "." || char == "e" || (!currentToken.isEmpty && currentToken.last == "e" && (char == "+" || char == "-"))) || (char == "-" && currentToken.isEmpty) {
             currentToken.append(char)
         } else {

@@ -13,6 +13,7 @@ private let symbolReplacements = ["/": "÷",
                                   "(": "⟮",
                                   ")": "⟯",
                                   "<sqrt>": "√",
+                                  "<ans>": "ANS",
                                   "x": "𝑥"]
 
 struct ContentView: View {
@@ -68,6 +69,7 @@ struct ContentView: View {
         if expression.isEmpty { return }
         
         if let result = evaluateMathExpression(expression) {
+            history.append((expression, String(format: "%g", Double(result)!)))
             expression = String(format: "%g", Double(result)!)
             displayingResult = true
         } else {
@@ -95,6 +97,8 @@ struct ContentView: View {
                     InputButton("^", .Special) { handleInput("^") }
                     Spacer()
                     InputButton("𝑥", .Special) { handleInput("x") }
+                    Spacer()
+                    InputButton("ANS", .Special) { handleInput("<ans>") }
                 }
                 HStack {
                     InputButton("C", .Control) { expression.removeAll() }
