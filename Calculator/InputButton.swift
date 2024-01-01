@@ -8,30 +8,39 @@
 import SwiftUI
 
 enum InputButtonType {
-    case Number, Operation, Other
+    case Number, Operation, Control, Special
 }
 
 struct InputButton: View {
     let key: String
+    let showsSystemImage: Bool
     let type: InputButtonType
     let action: () -> Void
     
-    init(_ key: String, _ type: InputButtonType, action: @escaping () -> Void = {}) {
+    init(_ key: String, showsSystemImage: Bool = false, _ type: InputButtonType, action: @escaping () -> Void) {
         self.key = key
+        self.showsSystemImage = showsSystemImage
         self.type = type
         self.action = action
     }
     
     var body: some View {
         Button(action: action) {
-            Text(key)
-                .font(.system(size: 32))
-                .fontWeight(.medium)
-                .foregroundStyle(self.type == .Other ? .black : .white)
-                .frame(width: 80, height: 70)
-                .background(backgroundColor())
-                .cornerRadius(100)
+            if showsSystemImage {
+                Image(systemName: key)
+                    .fontWeight(.semibold)
+                    .imageScale(.large)
+                    .frame(width: 80, height: self.type == .Special ? 40 : 70)
+            } else {
+                Text(key)
+                    .font(.system(size: 32))
+                    .fontWeight(.medium)
+                    .frame(width: 80, height: self.type == .Special ? 40 : 70)
+            }
         }
+        .foregroundStyle(self.type == .Control ? .black : .white)
+        .background(backgroundColor())
+        .cornerRadius(40)
     }
     
     func backgroundColor() -> Color {
@@ -40,8 +49,10 @@ struct InputButton: View {
             return Color(white: 0.30)
         case .Operation:
             return Color(red: 0.9, green: 0.6, blue: 0.03)
-        case .Other:
+        case .Control:
             return Color(white: 0.7)
+        case .Special:
+            return Color(white: 0, opacity: 0)
         }
     }
 }

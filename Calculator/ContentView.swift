@@ -90,22 +90,18 @@ struct ContentView: View {
             // Buttons
             VStack {
                 HStack {
-                    Button("", systemImage: "x.squareroot", action: { handleInput("<sqrt>") })
-                        .imageScale(.large)
-                        .foregroundStyle(.white)
-                    Button("^", action: { handleInput("^") })
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                    Button("𝑥", action: { handleInput("x") })
-                        .font(.title2)
-                        .foregroundStyle(.white)
+                    InputButton("x.squareroot", showsSystemImage: true, .Special) { handleInput("<sqrt>") }
+                    Spacer()
+                    InputButton("^", .Special) { handleInput("^") }
+                    Spacer()
+                    InputButton("𝑥", .Special) { handleInput("x") }
                 }
                 HStack {
-                    InputButton("C", .Other) { expression.removeAll() }
+                    InputButton("C", .Control) { expression.removeAll() }
                     Spacer()
-                    InputButton("(", .Other) { handleInput("(") }
+                    InputButton("(", .Control) { handleInput("(") }
                     Spacer()
-                    InputButton(")", .Other) { handleInput(")") }
+                    InputButton(")", .Control) { handleInput(")") }
                     Spacer()
                     InputButton("÷", .Operation) { handleInput("/") }
                 }
