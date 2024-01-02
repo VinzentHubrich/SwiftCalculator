@@ -142,9 +142,10 @@ struct ContentView: View {
                 }
                 .padding()
                 .frame(height: showInputMenu ? CGFloat.nan : 50, alignment: .top)
-                .background(showInputMenu ? Color(white: 0.2, opacity: 0.99) : Color.clear)
+                .background(showInputMenu ? Color(white: 0.2, opacity: 0.9) : Color.clear)
                 .contentShape(Rectangle())
                 .clipShape(RoundedRectangle(cornerRadius: showInputMenu ? 30 : 0))
+                .shadow(color: showInputMenu ? .black : Color.clear, radius: 20, x: 0, y: 10)
                 .offset(y: -50)
             }
         }
