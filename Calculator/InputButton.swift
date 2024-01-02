@@ -38,9 +38,10 @@ struct InputButton: View {
                     .frame(width: 80, height: self.type == .Special ? 40 : 70)
             }
         }
+        .frame(maxWidth: 100)
         .foregroundStyle(self.type == .Control ? .black : .white)
         .background(backgroundColor())
-        .cornerRadius(40)
+        .cornerRadius(50)
     }
     
     func backgroundColor() -> Color {
@@ -52,7 +53,7 @@ struct InputButton: View {
         case .Control:
             return Color(white: 0.7)
         case .Special:
-            return Color(white: 0, opacity: 0)
+            return Color.clear
         }
     }
 }
