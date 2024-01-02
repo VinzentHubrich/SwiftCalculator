@@ -18,8 +18,9 @@ private let symbolReplacements = ["/": "÷",
 
 struct ContentView: View {
     @State var expression: String = ""
-    @State var shakeExpression: Bool = false
+    @State private var shakeExpression: Bool = false
     @State private var displayingResult: Bool = false
+    @State private var showInputMenu: Bool = true
     
     private func handleInput(_ key: String) {
         if displayingResult {
@@ -91,63 +92,80 @@ struct ContentView: View {
             Spacer()
             
             // Buttons
-            VStack {
-                HStack {
-                    InputButton("x.squareroot", showsSystemImage: true, .Special) { handleInput("<sqrt>") }
-                    Spacer()
-                    InputButton("^", .Special) { handleInput("^") }
-                    Spacer()
-                    InputButton("𝑥", .Special) { handleInput("x") }
-                    Spacer()
-                    InputButton("ANS", .Special) { handleInput("<ans>") }
+            ZStack(alignment: .top) {
+                // Standard Buttons
+                VStack {
+                    HStack {
+                        InputButton("C", .Control) { expression.removeAll() }
+                        Spacer()
+                        InputButton("(", .Control) { handleInput("(") }
+                        Spacer()
+                        InputButton(")", .Control) { handleInput(")") }
+                        Spacer()
+                        InputButton("÷", .Operation) { handleInput("/") }
+                    }
+                    HStack {
+                        InputButton("7", .Number) { handleInput("7") }
+                        Spacer()
+                        InputButton("8", .Number) { handleInput("8") }
+                        Spacer()
+                        InputButton("9", .Number) { handleInput("9") }
+                        Spacer()
+                        InputButton("×", .Operation) { handleInput("*") }
+                    }
+                    HStack {
+                        InputButton("4", .Number) { handleInput("4") }
+                        Spacer()
+                        InputButton("5", .Number) { handleInput("5") }
+                        Spacer()
+                        InputButton("6", .Number) { handleInput("6") }
+                        Spacer()
+                        InputButton("−", .Operation) { handleInput("-") }
+                    }
+                    HStack {
+                        InputButton("1", .Number) { handleInput("1") }
+                        Spacer()
+                        InputButton("2", .Number) { handleInput("2") }
+                        Spacer()
+                        InputButton("3", .Number) { handleInput("3") }
+                        Spacer()
+                        InputButton("＋", .Operation) { handleInput("+") }
+                    }
+                    HStack {
+                        InputButton("0", .Number) { handleInput("0") }
+                        Spacer()
+                        InputButton(".", .Number) { handleInput(".") }
+                        Spacer()
+                        InputButton("delete.backward.fill", showsSystemImage: true, .Number) { if expression.popLast() == ">" { while expression.popLast() != "<" {}} }
+                        Spacer()
+                        InputButton("=", .Operation) { calculate() }
+                    }
                 }
-                HStack {
-                    InputButton("C", .Control) { expression.removeAll() }
-                    Spacer()
-                    InputButton("(", .Control) { handleInput("(") }
-                    Spacer()
-                    InputButton(")", .Control) { handleInput(")") }
-                    Spacer()
-                    InputButton("÷", .Operation) { handleInput("/") }
+                .padding()
+                
+                // Input Menu
+                VStack {
+                    HStack {
+                        InputButton("x.squareroot", showsSystemImage: true, .Special) { handleInput("<sqrt>") }
+                        Spacer()
+                        InputButton("^", .Special) { handleInput("^") }
+                        Spacer()
+                        InputButton("𝑥", .Special) { handleInput("x") }
+                        Spacer()
+                        InputButton(showInputMenu ? "xmark" : "ellipsis", showsSystemImage: true, .Special) { withAnimation { showInputMenu.toggle() } }
+                    }
+                    HStack {
+                        InputButton("ANS", .Special) { handleInput("<ans>") }
+                    }
                 }
-                HStack {
-                    InputButton("7", .Number) { handleInput("7") }
-                    Spacer()
-                    InputButton("8", .Number) { handleInput("8") }
-                    Spacer()
-                    InputButton("9", .Number) { handleInput("9") }
-                    Spacer()
-                    InputButton("×", .Operation) { handleInput("*") }
-                }
-                HStack {
-                    InputButton("4", .Number) { handleInput("4") }
-                    Spacer()
-                    InputButton("5", .Number) { handleInput("5") }
-                    Spacer()
-                    InputButton("6", .Number) { handleInput("6") }
-                    Spacer()
-                    InputButton("−", .Operation) { handleInput("-") }
-                }
-                HStack {
-                    InputButton("1", .Number) { handleInput("1") }
-                    Spacer()
-                    InputButton("2", .Number) { handleInput("2") }
-                    Spacer()
-                    InputButton("3", .Number) { handleInput("3") }
-                    Spacer()
-                    InputButton("＋", .Operation) { handleInput("+") }
-                }
-                HStack {
-                    InputButton("0", .Number) { handleInput("0") }
-                    Spacer()
-                    InputButton(".", .Number) { handleInput(".") }
-                    Spacer()
-                    InputButton("delete.backward.fill", showsSystemImage: true, .Number) { if expression.popLast() == ">" { while expression.popLast() != "<" {}} }
-                    Spacer()
-                    InputButton("=", .Operation) { calculate() }
-                }
+                .padding(10)
+                .frame(height: showInputMenu ? CGFloat.nan : 50, alignment: .top)
+                .background(showInputMenu ? Color(white: 0.2, opacity: 0.99) : Color.clear)
+                .contentShape(Rectangle())
+                .clipShape(RoundedRectangle(cornerRadius: showInputMenu ? 30 : 0))
+                .padding(.horizontal, 5)
+                .offset(y: -45)
             }
-            .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
