@@ -81,14 +81,29 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            HStack {
-                Spacer()
-                Text(expression.isEmpty ? "0" : formatExpression(expression))
-                    .foregroundStyle(.white)
-                    .font(.system(size: 50, weight: .light))
-                    .modifier(ShakeEffect(animatableData: CGFloat(self.shakeExpression ? 1 : 0)))
+            ZStack {
+                // Calculator Display
+                VStack {
+                    HStack {
+                        Spacer()
+                        Text(expression.isEmpty ? "0" : formatExpression(expression))
+                            .foregroundStyle(.white)
+                            .font(.system(size: 50, weight: .light))
+                            .modifier(ShakeEffect(animatableData: CGFloat(self.shakeExpression ? 1 : 0)))
+                    }
+                    
+                    Spacer()
+                }
+                .padding()
+                
+                // Invisible rectangle to detect touch outside of the input menu.
+                if showInputMenu {
+                    Rectangle()
+                        .opacity(1e-5)
+                        .layoutPriority(-1)
+                        .onTapGesture { withAnimation { showInputMenu = false } }
+                }
             }
-            .padding()
             
             Spacer()
             
@@ -128,6 +143,14 @@ struct ContentView: View {
                     }
                 }
                 .padding()
+                
+                // Rectangle to detect touch outside of the input menu. Also darkens the numpad.
+                if showInputMenu {
+                    Rectangle()
+                        .opacity(0.2)
+                        .layoutPriority(-1)
+                        .onTapGesture { withAnimation { showInputMenu = false } }
+                }
                 
                 // Input Menu
                 Grid(horizontalSpacing: 12, verticalSpacing: 8) {
