@@ -137,6 +137,7 @@ struct ContentView: View {
                         InputButton(showInputMenu ? "xmark" : "ellipsis", showsSystemImage: true, .Special) { withAnimation { showInputMenu.toggle() } }
                     }
                     GridRow {
+                        InputButton("π", .Special) { handleInput("π") }
                         InputButton("ANS", .Special) { handleInput("<ans>") }
                     }
                 }
