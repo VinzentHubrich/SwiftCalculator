@@ -70,13 +70,15 @@ struct ContentView: View {
     private func calculate() {
         if expression.isEmpty { return }
         
-        if let result = evaluateMathExpression(expression) {
-            history.append((expression, String(format: "%g", Double(result)!)))
-            expression = String(format: "%g", Double(result)!)
-            displayingResult = true
-        } else {
-            withAnimation(Animation.bouncy(duration: 0.3), { self.shakeExpression.toggle() })
+        let result = evaluateMathExpression(expression)
+        
+        if result == nil || Double(result!)!.isNaN { // nil -> Syntax Error | NaN -> Math Error
+            return withAnimation(Animation.bouncy(duration: 0.3), { self.shakeExpression.toggle() })
         }
+        
+        history.append((expression, String(format: "%g", Double(result!)!)))
+        expression = String(format: "%g", Double(result!)!)
+        displayingResult = true
     }
     
     var body: some View {
