@@ -34,23 +34,8 @@ struct ContentView: View {
         if expression.isEmpty {
             if key == "." {
                 expression.append("0")
-            } else if key == "+" || key == "*" || key == "/" || key == "0" {
+            } else if key == "0" {
                 return
-            }
-        } else {
-            if key == "." && Double(String(expression.last!)) == nil { return }
-            
-            if isOperator(key) && isOperator(String(expression.last!)) {
-                if expression.count > 2 && isOperator(String(expression[expression.index(expression.endIndex, offsetBy: -2)])) {
-                    if key == "/" || key == "*" {
-                        expression.removeLast(2)
-                    } else if key == "-" || key == "+" {
-                        expression.removeLast()
-                        return
-                    }
-                } else if !(key == "-" && (expression.last! == "/" || expression.last! == "*")) {
-                    expression.removeLast()
-                }
             }
         }
         
