@@ -10,8 +10,12 @@ import Foundation
 var history: [(String, String)] = []
 
 public func evaluateMathExpression(_ expression: String) -> String? {
+    var expr = expression
+    expr = expr.replacingOccurrences(of: "π", with: String(Double.pi))
+    expr = expr.replacingOccurrences(of: "<ans>", with: history.last?.1 ?? "invalid")
+    
     // Step 1: Tokenize the expression
-    let tokens = tokenize(expression)
+    let tokens = tokenize(expr)
 
     // Step 2: Parse and evaluate the expression
     let result = parseAndEvaluate(tokens)
@@ -23,8 +27,18 @@ private func tokenize(_ expression: String) -> [String] {
     var tokens: [String] = []
     var currentToken = ""
 
-    for char in expression.replacingOccurrences(of: "<ans>", with: history.last?.1 ?? "invalid") {
-        if (char.isNumber || char == "." || char == "e" || (!currentToken.isEmpty && currentToken.last == "e" && (char == "+" || char == "-"))) || (char == "-" && currentToken.isEmpty) {
+    for char in expression {
+        if char.isNumber {
+            currentToken.append(char)
+        } else if char == "." {
+            currentToken.append(char)
+        } else if char == "e" {
+            currentToken.append(char)
+        } else if !currentToken.isEmpty && currentToken.last == "e" && (char == "+" || char == "-") {
+            currentToken.append(char)
+        } else if char == "-" && currentToken.isEmpty && tokens.isEmpty {
+            currentToken.append(char)
+        } else if char == "-" && currentToken.isEmpty && !tokens.isEmpty && Double(tokens.last!) == nil && tokens.last! != ")" {
             currentToken.append(char)
         } else {
             if !currentToken.isEmpty && currentToken.first != "<" {
