@@ -49,7 +49,7 @@ struct ContentView: View {
             expr = expr.replacingOccurrences(of: symbol, with: replacement)
         }
         
-        return expr
+        return expr.isEmpty ? "0" : expr
     }
     
     private func calculate() {
@@ -73,7 +73,7 @@ struct ContentView: View {
                 VStack {
                     HStack {
                         Spacer()
-                        Text(expression.isEmpty ? "0" : formatExpression(expression))
+                        Text(formatExpression(expression))
                             .foregroundStyle(.white)
                             .font(.system(size: 50, weight: .light))
                             .modifier(ShakeEffect(animatableData: CGFloat(self.shakeExpression ? 1 : 0)))
