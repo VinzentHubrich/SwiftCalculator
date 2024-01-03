@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-private let symbolReplacements = ["/": "÷",
+private let symbolReplacements = [" ": "",
+                                  "/": "÷",
                                   "*": "∙",
                                   "-": "−",
                                   "(": "⟮",
