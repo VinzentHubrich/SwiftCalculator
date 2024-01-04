@@ -134,7 +134,8 @@ struct ContentView: View {
                 // Rectangle to detect touch outside of the input menu. Also darkens the numpad.
                 if showInputMenu {
                     Rectangle()
-                        .opacity(0.2)
+                        .fill(.black)
+                        .opacity(0.1)
                         .layoutPriority(-1)
                         .onTapGesture { withAnimation { showInputMenu = false } }
                 }
