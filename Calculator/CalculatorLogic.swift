@@ -70,71 +70,76 @@ private func tokenize(_ expression: String) -> [String] {
 private func parseAndEvaluate(_ tokens: [String]) -> String? {
     var tks: [String] = tokens
     
-    while tks.count > 1 {
-        if let openingParenthesisIndex = tks.lastIndex(where: { $0 == "(" }) {
-            if let closingParenthesisIndex = tks.enumerated().first(where: { $0.offset > openingParenthesisIndex && $0.element == ")" })?.offset {
-                if openingParenthesisIndex + 1 > closingParenthesisIndex - 1 {
-                    tks.remove(atOffsets: [openingParenthesisIndex, closingParenthesisIndex])
-                } else if let expr = parseAndEvaluate(Array(tks[openingParenthesisIndex+1...closingParenthesisIndex-1])) {
-                    tks.removeSubrange(openingParenthesisIndex..<closingParenthesisIndex)
-                    
-                    if openingParenthesisIndex > 0 && tks[openingParenthesisIndex-1] == "-" {
-                        if openingParenthesisIndex > 1 && tks[openingParenthesisIndex-2] == ")" {
-                            tks[openingParenthesisIndex] = expr
-                        } else {
-                            tks.remove(at: openingParenthesisIndex)
-                            tks[openingParenthesisIndex-1] = String(-Double(expr)!)
-                        }
-                    } else {
+    // 1. Evaluate parentheses
+    while let openingParenthesisIndex = tks.lastIndex(where: { $0 == "(" }) {
+        if let closingParenthesisIndex = tks.enumerated().first(where: { $0.offset > openingParenthesisIndex && $0.element == ")" })?.offset {
+            if openingParenthesisIndex + 1 == closingParenthesisIndex {
+                tks.remove(atOffsets: [openingParenthesisIndex, closingParenthesisIndex])
+            } else if let expr = parseAndEvaluate(Array(tks[openingParenthesisIndex+1...closingParenthesisIndex-1])) {
+                tks.removeSubrange(openingParenthesisIndex..<closingParenthesisIndex)
+                
+                if openingParenthesisIndex > 0 && tks[openingParenthesisIndex-1] == "-" {
+                    if openingParenthesisIndex > 1 && tks[openingParenthesisIndex-2] == ")" {
                         tks[openingParenthesisIndex] = expr
+                    } else {
+                        tks.remove(at: openingParenthesisIndex)
+                        tks[openingParenthesisIndex-1] = String(-Double(expr)!)
                     }
                 } else {
-                    return nil // invalid expression within parentheses
+                    tks[openingParenthesisIndex] = expr
                 }
             } else {
-                return nil // missing closing parenthesis ')'
+                return nil // invalid expression within parentheses
             }
-            
-        } else if let elemFuncIndex = tks.lastIndex(where: { isElementaryFunction($0) }) {
-            
-            if elemFuncIndex + 1 > tks.count - 1 {
-                return nil // missing parameter
-            }
-            
-            let elemFuncResult = applyElementaryFunction(function: tks[elemFuncIndex], tks[elemFuncIndex+1])
-            
-            if elemFuncResult == nil {
-                return nil // couldn't apply the function
-            }
-            
-            tks.remove(at: elemFuncIndex+1)
-            tks[elemFuncIndex] = elemFuncResult!
-            
-        } else if let op = tks.enumerated().first(where: { $0.element == "^" }) ?? tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
-            
-            if op.offset - 1 < 0 || op.offset + 1 > tks.count - 1 {
-                return nil // missing operand
-            }
-            
-            let operationResult = performOperation(tks[op.offset-1], operatorSymbol: op.element, tks[op.offset+1])
-            
-            if operationResult == nil {
-                return nil // invalid operation
-            }
-            
-            tks.remove(atOffsets: [op.offset, op.offset+1])
-            tks[op.offset-1] = operationResult!
-            
         } else {
-            return nil // not enough operators
+            return nil // missing closing parenthesis ')'
         }
     }
     
-    if tks.first == nil {
-        return "0" // empty expression
+    if tks.contains(where: { $0 == ")" }) {
+        return nil // missing opening parenthesis '('
     }
     
-    return Double(tks.first!) == nil || isOperator(tks.first!) || isElementaryFunction(tks.first!) || tks.first! == "(" || tks.first! == ")" ? nil : tks.first
+    // 2. Evaluate elementary functions
+    while let elemFuncIndex = tks.lastIndex(where: { isElementaryFunction($0) }) {
+        
+        if elemFuncIndex + 1 > tks.count - 1 {
+            return nil // missing parameter
+        }
+        
+        let elemFuncResult = applyElementaryFunction(function: tks[elemFuncIndex], tks[elemFuncIndex+1])
+        
+        if elemFuncResult == nil {
+            return nil // couldn't apply the function
+        }
+        
+        tks.remove(at: elemFuncIndex+1)
+        tks[elemFuncIndex] = elemFuncResult!
+    }
+    
+    // 3. Evaluate operations (ordered)
+    while let op = tks.enumerated().first(where: { $0.element == "^" }) ?? tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
+        
+        if op.offset - 1 < 0 || op.offset + 1 > tks.count - 1 {
+            return nil // missing operand
+        }
+        
+        let operationResult = performOperation(tks[op.offset-1], operatorSymbol: op.element, tks[op.offset+1])
+        
+        if operationResult == nil {
+            return nil // invalid operation
+        }
+        
+        tks.remove(atOffsets: [op.offset, op.offset+1])
+        tks[op.offset-1] = operationResult!
+    }
+    
+    if tks.count > 1 { return nil } // missing operators
+    
+    if tks.isEmpty { return nil } // no result
+    
+    // 4. Return result
+    return tks.first
 }
 
 func isOperator(_ token: String) -> Bool {
