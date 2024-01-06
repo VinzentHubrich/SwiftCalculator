@@ -24,7 +24,24 @@ struct Graph: View {
     }
     
     private func calculateY(_ x: Double) -> Double {
-        Double(evaluateMathExpression(expression.replacingOccurrences(of: "x", with: String(x)))!)!
+        var expr: [String] = expression.map { String($0) }
+        
+        // Replace x and insert * operation if necessary
+        while let index = expr.firstIndex(where: { $0 == "x" }) {
+            if index > 0 && Double(expr[index-1]) != nil {
+                expr[index] = "*\(x)"
+            } else {
+                expr[index] = String(x)
+            }
+        }
+        
+        let result = evaluateMathExpression(expr.joined())
+        
+        if result == nil {
+            return Double.nan
+        }
+        
+        return Double(result!)!
     }
     
     var body: some View {
