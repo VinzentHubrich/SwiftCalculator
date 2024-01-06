@@ -23,23 +23,28 @@ struct ContentView: View {
     @State private var displayingResult: Bool = false
     @State private var showInputMenu: Bool = false
     
-    private func handleInput(_ key: String) {
+    private func handleInput(_ input: String) {
         if displayingResult {
-            if !isOperator(key) {
+            if !isOperator(input) {
                 expression.removeAll()
             }
             displayingResult = false
         }
         
-        if expression.isEmpty {
-            if key == "." {
-                expression.append("0")
-            } else if key == "0" {
-                return
-            }
+        if input == "_delete_" {
+            withAnimation(.linear(duration: 0.1)) { if expression.popLast() == ">" { while expression.popLast() != "<" {} } }
+            return
         }
         
-        expression.append(key)
+        if expression.isEmpty {
+            if input == "." {
+                expression.append("0.")
+            } else if input != "0" {
+                expression.append(input)
+            }
+        } else {
+            withAnimation(.linear(duration: 0.1)) { expression.append(input) }
+        }
     }
     
     private func formatExpression(_ expression: String) -> String {
@@ -125,7 +130,7 @@ struct ContentView: View {
                     GridRow {
                         InputButton("0", .Number) { handleInput("0") }
                         InputButton(".", .Number) { handleInput(".") }
-                        InputButton("delete.backward.fill", showsSystemImage: true, .Number) { if expression.popLast() == ">" { while expression.popLast() != "<" {}} }
+                        InputButton("delete.backward.fill", showsSystemImage: true, .Number) { handleInput("_delete_") }
                         InputButton("=", .Operation) { calculate() }
                     }
                 }
