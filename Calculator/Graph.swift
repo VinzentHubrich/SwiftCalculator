@@ -21,7 +21,7 @@ struct Graph: View {
     
     var domainX: [Double] = [-10, 10]
     var domainY: [Double] = [-10, 10]
-    let resolution: Int = 15
+    let resolution: Int = 100
     let frequency: Double
 
     init(expression: String) {
@@ -44,12 +44,19 @@ struct Graph: View {
         // Calculate values
         var values: [Point] = []
         
-        for x in Array(stride(from: domainX.first!, through: domainX.last!, by: frequency)) {
+        for step in Array(stride(from: domainX.first!, through: domainX.last!, by: frequency)) {
+            let x = round(step * 1000) / 1000.0
+            
             let result = evaluateMathExpression(String(expr.joined()).replacingOccurrences(of: "X", with: String(x)))
             
             if result == nil {
                 values.append(Point(x: x, y: Double.nan))
             } else {
+                // Pole check using 2 different approaches
+                if values.last != nil && (abs(values.last!.y + Double(result!)!) < 0.01 * abs(values.last!.y) || abs(values.last!.y) * 5 < abs(Double(result!)!)) {
+                    values.append(Point(x: values.last!.x + frequency/2, y: Double.nan))
+                }
+                
                 values.append(Point(x: x, y: Double(result!)!))
             }
         }
