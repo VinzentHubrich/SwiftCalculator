@@ -168,7 +168,7 @@ private func performOperation(_ operand1: String, operatorSymbol: String, _ oper
 }
 
 func isElementaryFunction(_ token: String) -> Bool {
-    return ["<sqrt>", "<sin>", "<cos>", "<tan>"].contains(token)
+    return ["<sqrt>", "<sin>", "<cos>", "<tan>", "<cot>"].contains(token)
 }
 
 private func applyElementaryFunction(function: String, _ parameter: String) -> String? {
@@ -182,6 +182,8 @@ private func applyElementaryFunction(function: String, _ parameter: String) -> S
             return String(cos(param))
         case "<tan>":
             return String(tan(param))
+        case "<cot>":
+            return String(1/tan(param))
         default:
             return nil // Invalid elementary function
         }

@@ -17,6 +17,7 @@ private let symbolReplacements = [" ": "",
                                   "<sin>": "sin",
                                   "<cos>": "cos",
                                   "<tan>": "tan",
+                                  "<cot>": "cot",
                                   "<ans>": "ANS",
                                   "x": "𝑥"]
 
@@ -199,6 +200,7 @@ struct ContentView: View {
                     }
                     GridRow {
                         InputButton("ANS", .Special) { handleInput("<ans>") }
+                        InputButton("cot", .Special) { handleInput("<cot>") }
                     }
                 }
                 .padding()
