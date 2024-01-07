@@ -74,11 +74,46 @@ struct ContentView: View {
     var body: some View {
         VStack {
             ZStack {
+                // Graph
+                if expression.contains("x") {
+                    HStack {
+                        Graph(expression: expression)
+                            .frame(width: 300)
+                            .mask {
+                                LinearGradient(gradient: Gradient(stops: [
+                                    .init(color: Color.clear, location: 0),
+                                    .init(color: Color.white, location: 0.2),
+                                    .init(color: Color.white, location: 0.8),
+                                    .init(color: Color.clear, location: 1)
+                                ]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                                )
+                            }
+                            .mask {
+                                LinearGradient(gradient: Gradient(stops: [
+                                    .init(color: Color.clear, location: 0),
+                                    .init(color: Color.white, location: 0.2),
+                                    .init(color: Color.white, location: 0.8),
+                                    .init(color: Color.clear, location: 1)
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                                )
+                            }
+                            .offset(x: -20)
+                            .ignoresSafeArea()
+                        
+                        Spacer()
+                    }
+                }
+                
                 // Calculator Display
                 VStack {
                     HStack {
                         Spacer()
                         Text(formatExpression(expression))
+                            .background(Color(white: 0, opacity: 0.7))
                             .foregroundStyle(.white)
                             .font(.system(size: 50, weight: .light))
                             .modifier(ShakeEffect(animatableData: CGFloat(self.shakeExpression ? 1 : 0)))
@@ -87,15 +122,6 @@ struct ContentView: View {
                     Spacer()
                 }
                 .padding()
-                
-                if expression.contains("x") {
-                    HStack {
-                        Graph(expression: expression)
-                            .frame(width: 200)
-                        
-                        Spacer()
-                    }
-                }
                 
                 // Invisible rectangle to detect touch outside of the input menu.
                 if showInputMenu {
