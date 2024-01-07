@@ -65,7 +65,7 @@ struct Graph: View {
             if result == nil {
                 values.append(Point(x: x, y: Double.nan))
             } else {
-                let result = min(domainY.last!, max(domainY.first!, Double(result!)!))
+                let result = min(domainY.last! * 1.01, max(domainY.first! * 1.01, Double(result!)!))
                 // Pole check using 2 different approaches
                 if values.last != nil && 
                     (abs(values.last!.y + result) < 1 * abs(values.last!.y) ||
@@ -121,10 +121,11 @@ struct Graph: View {
             }
             .onAppear { update(graphSize: geometry.size) }
             .onChange(of: expression, { update(graphSize: geometry.size) })
+            .clipShape(Rectangle())
         }
     }
 }
 
 #Preview {
-    Graph(expression: "1/x").background(.black)
+    Graph(expression: "x*<tan>x").background(.black)
 }
