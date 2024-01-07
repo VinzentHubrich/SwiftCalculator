@@ -20,6 +20,7 @@ struct Graph: View {
     @State private var points: [Point] = []
     @State private var domainX: [Double] = [-10, 10]
     @State private var domainY: [Double] = [-10, 10]
+    @State private var axisRatio: Double = 1
     @State private var frequency: Double = 1
     
     private let resolution: Int = 400
@@ -32,9 +33,9 @@ struct Graph: View {
     }
     
     private func update(graphSize: CGSize) {
-        let ratio = graphSize.height / graphSize.width
+        axisRatio = graphSize.height / graphSize.width
         domainX = [center.x - xScale / 2, center.x + xScale / 2]
-        domainY = [center.y - (xScale / 2) * ratio, center.y + (xScale / 2) * ratio]
+        domainY = [center.y - (xScale / 2) * axisRatio, center.y + (xScale / 2) * axisRatio]
         
         frequency = (domainX.last! - domainX.first!) / Double(resolution)
         
@@ -99,20 +100,21 @@ struct Graph: View {
                     .interpolationMethod(.monotone)
                 }
             }
-            .ignoresSafeArea()
             .foregroundStyle(.white)
             .chartXScale(domain: domainX)
             .chartYScale(domain: domainY)
             .chartXAxis {
                 AxisMarks(
-                    values: Array(stride(from: domainX.first! + axisMarkStepSize, to: domainX.last!, by: axisMarkStepSize))
+                    values: Array(stride(from: 0, to: domainX.first!, by: -axisMarkStepSize)) +
+                            Array(stride(from: 0, to: domainX.last!, by: axisMarkStepSize))
                 ) {
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 1)).foregroundStyle(Color(white: 0.4, opacity: 0.5))
                 }
             }
             .chartYAxis {
                 AxisMarks(
-                    values: Array(stride(from: domainY.first! + axisMarkStepSize, to: domainY.last!, by: axisMarkStepSize))
+                    values: Array(stride(from: 0, to: domainY.last!, by: axisMarkStepSize)) +
+                            Array(stride(from: 0, to: domainY.first!, by: -axisMarkStepSize))
                 ) {
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 1)).foregroundStyle(Color(white: 0.4, opacity: 0.5))
                 }
