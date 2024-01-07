@@ -168,7 +168,7 @@ private func performOperation(_ operand1: String, operatorSymbol: String, _ oper
 }
 
 func isElementaryFunction(_ token: String) -> Bool {
-    return token == "<sqrt>"
+    return ["<sqrt>", "<sin>"].contains(token)
 }
 
 private func applyElementaryFunction(function: String, _ parameter: String) -> String? {
@@ -176,6 +176,8 @@ private func applyElementaryFunction(function: String, _ parameter: String) -> S
         switch function {
         case "<sqrt>":
             return String(param.squareRoot())
+        case "<sin>":
+            return String(sin(param))
         default:
             return nil // Invalid elementary function
         }
