@@ -22,7 +22,7 @@ struct Graph: View {
     @State private var domainY: [Double] = [-10, 10]
     @State private var frequency: Double = 1
     
-    private let resolution: Int = 100
+    private let resolution: Int = 400
     private var center: Point = Point(x: 0, y: 0)
     private var xScale: Double = 20
     private let axisMarkStepSize: Double = 5
@@ -46,7 +46,7 @@ struct Graph: View {
         
         // Insert * operation before x if necessary
         while let index = expr.firstIndex(where: { $0 == "x" }) {
-            if index > 0 && !isOperator(expr[index-1]) && !isElementaryFunction(expr[index-1]) && expr[index-1] != "(" {
+            if index > 0 && !isOperator(expr[index-1]) && expr[index-1] != ">" && expr[index-1] != "(" {
                 expr[index] = "*X"
             } else {
                 expr[index] = "X"
@@ -64,14 +64,15 @@ struct Graph: View {
             if result == nil {
                 values.append(Point(x: x, y: Double.nan))
             } else {
+                let result = min(domainY.last!, max(domainY.first!, Double(result!)!))
                 // Pole check using 2 different approaches
                 if values.last != nil && 
-                    (abs(values.last!.y + Double(result!)!) < 0.01 * abs(values.last!.y) ||
-                     abs(values.last!.y) * 5 < abs(Double(result!)!)) {
+                    (abs(values.last!.y + result) < 1 * abs(values.last!.y) ||
+                     abs(values.last!.y) * 5 < abs(result)) {
                     values.append(Point(x: values.last!.x + frequency/2, y: Double.nan))
                 }
                 
-                values.append(Point(x: x, y: Double(result!)!))
+                values.append(Point(x: x, y: result))
             }
         }
         
