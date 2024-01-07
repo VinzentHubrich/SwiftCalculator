@@ -17,16 +17,18 @@ struct Point: Identifiable {
 struct Graph: View {
     let expression: String
     
-    @State var points: [Point] = []
+    @State private var points: [Point] = []
+    @State private var domainX: [Double] = [-10, 10]
+    @State private var domainY: [Double] = [-10, 10]
+    @State private var frequency: Double = 1
     
-    var domainX: [Double] = [-10, 10]
-    var domainY: [Double] = [-10, 10]
-    let resolution: Int = 100
-    let frequency: Double
+    private let resolution: Int = 100
+    private var center: Point = Point(x: 0, y: 0)
+    private var xScale: Double = 20
+    private let axisMarkStepSize: Double = 5
 
     init(expression: String) {
         self.expression = expression
-        self.frequency = (domainX.last! - domainX.first!) / Double(resolution)
     }
     
     private func calculatePoints() {
@@ -65,23 +67,53 @@ struct Graph: View {
     }
     
     var body: some View {
-        Chart {
-            RuleMark(x: .value("", 0))
-            RuleMark(y: .value("", 0))
-            
-            ForEach(points) { point in
-                LineMark(
-                    x: .value("", point.x),
-                    y: .value("", point.y)
-                )
-                .foregroundStyle(.orange)
-                .interpolationMethod(.monotone)
+        GeometryReader { geometry in
+            Chart {
+                Plot {
+                    RuleMark(x: .value("", 0))
+                    RuleMark(y: .value("", 0))
+                }
+                .lineStyle(StrokeStyle(lineWidth: 2.5))
+                .foregroundStyle(.opacity(0.8))
+                
+                ForEach(points) { point in
+                    LineMark(
+                        x: .value("", point.x),
+                        y: .value("", point.y)
+                    )
+                    .foregroundStyle(.orange)
+                    .lineStyle(StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .interpolationMethod(.monotone)
+                }
+            }
+            .ignoresSafeArea()
+            .foregroundStyle(.white)
+            .chartXScale(domain: domainX)
+            .chartYScale(domain: domainY)
+            .chartXAxis {
+                AxisMarks(
+                    values: Array(stride(from: domainX.first!, through: domainX.last!, by: axisMarkStepSize))
+                ) {
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1)).foregroundStyle(Color(white: 0.4, opacity: 0.5))
+                }
+            }
+            .chartYAxis {
+                AxisMarks(
+                    values: Array(stride(from: domainY.first!, through: domainY.last!, by: axisMarkStepSize))
+                ) {
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1)).foregroundStyle(Color(white: 0.4, opacity: 0.5))
+                }
+            }
+            .onAppear {
+                let ratio = geometry.size.height / geometry.size.width
+                domainX = [center.x - xScale / 2, center.x + xScale / 2]
+                domainY = [center.y - (xScale / 2) * ratio, center.y + (xScale / 2) * ratio]
+                
+                frequency = (domainX.last! - domainX.first!) / Double(resolution)
+                
+                calculatePoints()
             }
         }
-        .foregroundStyle(.white)
-        .chartXScale(domain: domainX)
-        .chartYScale(domain: domainY)
-        .onAppear { calculatePoints() }
     }
 }
 
