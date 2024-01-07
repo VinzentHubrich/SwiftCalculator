@@ -88,6 +88,15 @@ struct ContentView: View {
                 }
                 .padding()
                 
+                if expression.contains("x") {
+                    HStack {
+                        Graph(expression: expression)
+                            .frame(width: 200)
+                        
+                        Spacer()
+                    }
+                }
+                
                 // Invisible rectangle to detect touch outside of the input menu.
                 if showInputMenu {
                     Rectangle()

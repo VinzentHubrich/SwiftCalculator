@@ -31,6 +31,16 @@ struct Graph: View {
         self.expression = expression
     }
     
+    private func update(graphSize: CGSize) {
+        let ratio = graphSize.height / graphSize.width
+        domainX = [center.x - xScale / 2, center.x + xScale / 2]
+        domainY = [center.y - (xScale / 2) * ratio, center.y + (xScale / 2) * ratio]
+        
+        frequency = (domainX.last! - domainX.first!) / Double(resolution)
+        
+        calculatePoints()
+    }
+    
     private func calculatePoints() {
         var expr: [String] = expression.map { String($0) }
         
@@ -92,27 +102,20 @@ struct Graph: View {
             .chartYScale(domain: domainY)
             .chartXAxis {
                 AxisMarks(
-                    values: Array(stride(from: domainX.first!, through: domainX.last!, by: axisMarkStepSize))
+                    values: Array(stride(from: domainX.first! + axisMarkStepSize, to: domainX.last!, by: axisMarkStepSize))
                 ) {
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 1)).foregroundStyle(Color(white: 0.4, opacity: 0.5))
                 }
             }
             .chartYAxis {
                 AxisMarks(
-                    values: Array(stride(from: domainY.first!, through: domainY.last!, by: axisMarkStepSize))
+                    values: Array(stride(from: domainY.first! + axisMarkStepSize, to: domainY.last!, by: axisMarkStepSize))
                 ) {
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 1)).foregroundStyle(Color(white: 0.4, opacity: 0.5))
                 }
             }
-            .onAppear {
-                let ratio = geometry.size.height / geometry.size.width
-                domainX = [center.x - xScale / 2, center.x + xScale / 2]
-                domainY = [center.y - (xScale / 2) * ratio, center.y + (xScale / 2) * ratio]
-                
-                frequency = (domainX.last! - domainX.first!) / Double(resolution)
-                
-                calculatePoints()
-            }
+            .onAppear { update(graphSize: geometry.size) }
+            .onChange(of: expression, { update(graphSize: geometry.size) })
         }
     }
 }
