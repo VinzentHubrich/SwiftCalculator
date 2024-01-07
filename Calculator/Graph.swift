@@ -62,7 +62,7 @@ struct Graph: View {
             
             let result = evaluateMathExpression(String(expr.joined()).replacingOccurrences(of: "X", with: String(x)))
             
-            if result == nil {
+            if result == nil || result == "nan" {
                 values.append(Point(x: x, y: Double.nan))
             } else {
                 let result = min(domainY.last! * 1.01, max(domainY.first! * 1.01, Double(result!)!))
