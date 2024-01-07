@@ -167,7 +167,7 @@ private func performOperation(_ operand1: String, operatorSymbol: String, _ oper
     }
 }
 
-private func isElementaryFunction(_ token: String) -> Bool {
+func isElementaryFunction(_ token: String) -> Bool {
     return token == "<sqrt>"
 }
 

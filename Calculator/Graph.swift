@@ -46,7 +46,7 @@ struct Graph: View {
         
         // Insert * operation before x if necessary
         while let index = expr.firstIndex(where: { $0 == "x" }) {
-            if index > 0 && Double(expr[index-1]) != nil {
+            if index > 0 && !isOperator(expr[index-1]) && !isElementaryFunction(expr[index-1]) && expr[index-1] != "(" {
                 expr[index] = "*X"
             } else {
                 expr[index] = "X"
@@ -65,7 +65,9 @@ struct Graph: View {
                 values.append(Point(x: x, y: Double.nan))
             } else {
                 // Pole check using 2 different approaches
-                if values.last != nil && (abs(values.last!.y + Double(result!)!) < 0.01 * abs(values.last!.y) || abs(values.last!.y) * 5 < abs(Double(result!)!)) {
+                if values.last != nil && 
+                    (abs(values.last!.y + Double(result!)!) < 0.01 * abs(values.last!.y) ||
+                     abs(values.last!.y) * 5 < abs(Double(result!)!)) {
                     values.append(Point(x: values.last!.x + frequency/2, y: Double.nan))
                 }
                 
