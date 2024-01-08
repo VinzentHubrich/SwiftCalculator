@@ -24,7 +24,8 @@ struct Graph: View {
     @State private var frequency: Double = 1
     
     private let resolution: Int = 400
-    private var center: Point = Point(x: 0, y: 0)
+    @State private var center: Point = Point(x: 0, y: 0)
+    @State private var lastDragTranslation: CGSize = .zero
     private var xScale: Double = 20
     private let axisMarkStepSize: Double = 5
 
@@ -100,7 +101,6 @@ struct Graph: View {
                     .interpolationMethod(.monotone)
                 }
             }
-            .foregroundStyle(.white)
             .chartXScale(domain: domainX)
             .chartYScale(domain: domainY)
             .chartXAxis {
@@ -119,9 +119,27 @@ struct Graph: View {
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 1)).foregroundStyle(Color(white: 0.4, opacity: 0.5))
                 }
             }
-            .onAppear { update(graphSize: geometry.size) }
-            .onChange(of: expression, { update(graphSize: geometry.size) })
+            .foregroundStyle(.white)
             .clipShape(Rectangle())
+            .onChange(of: expression, initial: true) { update(graphSize: geometry.size) }
+            .gesture(
+                DragGesture()
+                    .onChanged { gesture in
+                        let deltaX = gesture.translation.width - lastDragTranslation.width
+                        let deltaY = gesture.translation.height - lastDragTranslation.height
+                        lastDragTranslation = gesture.translation
+                        
+                        center.x -= deltaX / 19
+                        center.y += deltaY / 19
+                        
+                        update(graphSize: geometry.size)
+                    }
+                    .onEnded { _ in lastDragTranslation = .zero }
+            )
+            .onTapGesture(count: 2) {
+                center = Point(x: 0, y: 0)
+                update(graphSize: geometry.size)
+            }
         }
     }
 }
