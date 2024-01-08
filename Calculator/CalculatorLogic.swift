@@ -11,8 +11,7 @@ var history: [(String, String)] = []
 
 public func evaluateMathExpression(_ expression: String) -> String? {
     var expr = expression
-    expr = expr.replacingOccurrences(of: "π", with: String(Double.pi))
-    expr = expr.replacingOccurrences(of: "<ans>", with: history.last?.1 ?? "invalid")
+    expr = expr.replacingOccurrences(of: "<ans>", with: history.last?.1 ?? "invalid") // TODO: insert * if needed
     
     // Step 1: Tokenize the expression
     let tokens = tokenize(expr)
@@ -46,7 +45,12 @@ private func tokenize(_ expression: String) -> [String] {
                 currentToken = ""
             }
             
-            if char == "<" {
+            if char == "π" {
+                if !tokens.isEmpty && shouldInsertMultiplicationToken(tokens.last!) {
+                    tokens.append("*")
+                }
+                tokens.append(String(Double.pi))
+            } else if char == "<" {
                 currentToken.append(char)
             } else if char == ">" {
                 currentToken.append(char)
@@ -194,4 +198,8 @@ private func applyElementaryFunction(function: String, _ parameter: String) -> S
     } else {
         return nil // Invalid parameter
     }
+}
+
+func shouldInsertMultiplicationToken(_ lastToken: String) -> Bool {
+    !isOperator(lastToken) && lastToken != ">" && lastToken != "("
 }

@@ -47,7 +47,7 @@ struct Graph: View {
         
         // Insert * operation before x if necessary
         while let index = expr.firstIndex(where: { $0 == "x" }) {
-            if index > 0 && !isOperator(expr[index-1]) && expr[index-1] != ">" && expr[index-1] != "(" {
+            if index > 0 && shouldInsertMultiplicationToken(expr[index-1]) {
                 expr[index] = "*X"
             } else {
                 expr[index] = "X"
