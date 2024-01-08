@@ -84,29 +84,29 @@ struct ContentView: View {
                 if expression.contains("x") {
                     HStack {
                         Graph(expression: expression)
+                            .mask {
+                                LinearGradient(gradient: Gradient(stops: [
+                                    .init(color: Color.clear, location: 0),
+                                    .init(color: Color.white, location: 0.2),
+                                    .init(color: Color.white, location: 0.8),
+                                    .init(color: Color.clear, location: 1)
+                                ]),
+                                               startPoint: .leading,
+                                               endPoint: .trailing
+                                )
+                            }
+                            .mask {
+                                LinearGradient(gradient: Gradient(stops: [
+                                    .init(color: Color.clear, location: 0),
+                                    .init(color: Color.white, location: 0.2),
+                                    .init(color: Color.white, location: 0.8),
+                                    .init(color: Color.clear, location: 1)
+                                ]),
+                                               startPoint: .top,
+                                               endPoint: .bottom
+                                )
+                            }
                             .frame(width: 300)
-                            .mask {
-                                LinearGradient(gradient: Gradient(stops: [
-                                    .init(color: Color.clear, location: 0),
-                                    .init(color: Color.white, location: 0.2),
-                                    .init(color: Color.white, location: 0.8),
-                                    .init(color: Color.clear, location: 1)
-                                ]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                                )
-                            }
-                            .mask {
-                                LinearGradient(gradient: Gradient(stops: [
-                                    .init(color: Color.clear, location: 0),
-                                    .init(color: Color.white, location: 0.2),
-                                    .init(color: Color.white, location: 0.8),
-                                    .init(color: Color.clear, location: 1)
-                                ]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                                )
-                            }
                             .offset(x: -20)
                             .ignoresSafeArea()
                         
@@ -201,10 +201,13 @@ struct ContentView: View {
                         InputButton("tan", .Special) { handleInput("<tan>") }
                     }
                     GridRow {
-                        InputButton("ANS", .Special) { handleInput("<ans>") }
+                        InputButton("𝒆", .Special) { handleInput("𝒆") }
                         InputButton("csc", .Special) { handleInput("<csc>") }
                         InputButton("sec", .Special) { handleInput("<sec>") }
                         InputButton("cot", .Special) { handleInput("<cot>") }
+                    }
+                    GridRow {
+                        InputButton("ANS", .Special) { handleInput("<ans>") }
                     }
                 }
                 .padding()

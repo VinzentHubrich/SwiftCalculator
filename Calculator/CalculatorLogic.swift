@@ -50,6 +50,11 @@ private func tokenize(_ expression: String) -> [String] {
                     tokens.append("*")
                 }
                 tokens.append(String(Double.pi))
+            } else if char == "𝒆" {
+                if !tokens.isEmpty && shouldInsertMultiplicationToken(tokens.last!) {
+                    tokens.append("*")
+                }
+                tokens.append(String(M_E))
             } else if char == "<" {
                 currentToken.append(char)
             } else if char == ">" {
