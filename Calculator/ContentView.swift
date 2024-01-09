@@ -20,7 +20,7 @@ private let symbolReplacements = [" ": "",
                                   "<csc>": "csc",
                                   "<sec>": "sec",
                                   "<cot>": "cot",
-                                  "<ans>": "ANS",
+                                  "≂": "ANS",
                                   "x": "𝑥"]
 
 struct ContentView: View {
@@ -207,7 +207,7 @@ struct ContentView: View {
                         InputButton("cot", .Special) { handleInput("<cot>") }
                     }
                     GridRow {
-                        InputButton("ANS", .Special) { handleInput("<ans>") }
+                        InputButton("ANS", .Special) { handleInput("≂") }
                     }
                 }
                 .padding()

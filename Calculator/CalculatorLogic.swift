@@ -10,11 +10,8 @@ import Foundation
 var history: [(String, String)] = []
 
 public func evaluateMathExpression(_ expression: String) -> String? {
-    var expr = expression
-    expr = expr.replacingOccurrences(of: "<ans>", with: history.last?.1 ?? "invalid") // TODO: insert * if needed
-    
     // Step 1: Tokenize the expression
-    let tokens = tokenize(expr)
+    let tokens = tokenize(expression)
 
     // Step 2: Parse and evaluate the expression
     let result = parseAndEvaluate(tokens)
@@ -55,6 +52,11 @@ private func tokenize(_ expression: String) -> [String] {
                     tokens.append("*")
                 }
                 tokens.append(String(M_E))
+            } else if char == "≂" {
+                if !tokens.isEmpty && shouldInsertMultiplicationToken(tokens.last!) {
+                    tokens.append("*")
+                }
+                tokens.append(history.last?.1 ?? "0")
             } else if char == "<" {
                 currentToken.append(char)
             } else if char == ">" {
