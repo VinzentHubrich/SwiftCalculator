@@ -7,7 +7,13 @@
 
 import Foundation
 
-var history: [(String, String)] = []
+struct Calculation: Identifiable {
+    let id = UUID().uuidString
+    let expression: String
+    let result: String
+}
+
+var history: [Calculation] = []
 
 public func evaluateMathExpression(_ expression: String) -> String? {
     // Step 1: Tokenize the expression
@@ -56,7 +62,7 @@ private func tokenize(_ expression: String) -> [String] {
                 if !tokens.isEmpty && shouldInsertMultiplicationToken(tokens.last!) {
                     tokens.append("*")
                 }
-                tokens.append(history.last?.1 ?? "0")
+                tokens.append(history.last?.result ?? "0")
             } else if char == "<" {
                 currentToken.append(char)
             } else if char == ">" {

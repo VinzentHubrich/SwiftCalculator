@@ -28,6 +28,7 @@ struct ContentView: View {
     @State private var shakeExpression: Bool = false
     @State private var displayingResult: Bool = false
     @State private var showInputMenu: Bool = false
+    @State private var showHistory: Bool = false
     
     private func handleInput(_ input: String) {
         if displayingResult {
@@ -72,7 +73,7 @@ struct ContentView: View {
             return withAnimation(Animation.bouncy(duration: 0.3), { self.shakeExpression.toggle() })
         }
         
-        history.append((expression, String(format: "%g", Double(result!)!)))
+        history.append(Calculation(expression: expression, result: String(format: "%g", Double(result!)!)))
         expression = String(format: "%g", Double(result!)!)
         displayingResult = true
     }
@@ -208,6 +209,10 @@ struct ContentView: View {
                     }
                     GridRow {
                         InputButton("ANS", .Special) { handleInput("≂") }
+                        InputButton("clock.arrow.circlepath", showsSystemImage: true, .Special) {
+                            withAnimation { showInputMenu = false }
+                            showHistory = true
+                        }
                     }
                 }
                 .padding()
@@ -221,6 +226,49 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.black)
+        .sheet(isPresented: $showHistory) {
+            VStack {
+                HStack {
+                    Spacer()
+                    Button("", systemImage: "xmark") {
+                        showHistory = false
+                    }
+                    .foregroundStyle(.white)
+                    .imageScale(.large)
+                }
+                
+                Spacer()
+                
+                ScrollView {
+                    ForEach(history.reversed()) { calculation in
+                        VStack {
+                            HStack {
+                                Text(formatExpression(calculation.expression))
+                                Spacer()
+                            }
+                            HStack {
+                                Spacer()
+                                Text(formatExpression(calculation.result))
+                            }
+                            if calculation.id != history.first?.id {
+                                Divider()
+                                    .frame(height: 2)
+                                    .overlay(Color(white: 0.3))
+                            }
+                        }
+                        .font(.system(size: 40, weight: .light))
+                    }
+                }
+                .scrollIndicators(.hidden)
+            }
+            .padding()
+            .foregroundStyle(.white)
+            .presentationBackground(.regularMaterial).preferredColorScheme(.dark)
+            .presentationDetents([.fraction(0.6)])
+            .presentationCornerRadius(30)
+            .interactiveDismissDisabled()
+            .ignoresSafeArea()
+        }
     }
 }
 
