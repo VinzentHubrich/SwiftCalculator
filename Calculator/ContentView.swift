@@ -193,7 +193,8 @@ struct ContentView: View {
                         InputButton("x.squareroot", showsSystemImage: true, .Special) { handleInput("<sqrt>") }
                         InputButton("^", .Special) { handleInput("^") }
                         InputButton("𝑥", .Special) { handleInput("x") }
-                        InputButton(showInputMenu ? "xmark" : "ellipsis", showsSystemImage: true, .Special) { withAnimation { showInputMenu.toggle() } }
+                        InputButton(showInputMenu ? "xmark" : "ellipsis", showsSystemImage: true, .Special) { withAnimation { showInputMenu.toggle() } }.contentTransition(.symbolEffect(.replace))
+
                     }
                     GridRow {
                         InputButton("π", .Special) { handleInput("π") }
