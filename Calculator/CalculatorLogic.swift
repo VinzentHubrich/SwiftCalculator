@@ -156,7 +156,7 @@ private func parseAndEvaluate(_ tokens: [String]) -> String? {
     if tks.isEmpty { return nil } // no result
     
     // 4. Return result
-    return tks.first
+    return Double(tks.first!) == nil ? nil : tks.first
 }
 
 func isOperator(_ token: String) -> Bool {
