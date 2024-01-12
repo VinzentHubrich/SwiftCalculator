@@ -26,7 +26,8 @@ struct Graph: View {
     private let resolution: Int = 400
     @State private var center: Point = Point(x: 0, y: 0)
     @State private var lastDragTranslation: CGSize = .zero
-    private var xScale: Double = 20
+    @State private var xScale: Double = 20
+    @State private var lastZoomValue: CGFloat = 1
     private let axisMarkStepSize: Double = 5
 
     init(expression: String) {
@@ -129,15 +130,26 @@ struct Graph: View {
                         let deltaY = gesture.translation.height - lastDragTranslation.height
                         lastDragTranslation = gesture.translation
                         
-                        center.x -= deltaX / 19
-                        center.y += deltaY / 19
+                        center.x -= deltaX * xScale * 0.0025
+                        center.y += deltaY * xScale * 0.0025
                         
                         update(graphSize: geometry.size)
                     }
                     .onEnded { _ in lastDragTranslation = .zero }
             )
+            .gesture(
+                MagnificationGesture()
+                    .onChanged { value in
+                        xScale = max(5, min(100, xScale * (1 - (value - lastZoomValue))))
+                        lastZoomValue = value
+                        
+                        update(graphSize: geometry.size)
+                    }
+                    .onEnded { _ in lastZoomValue = 1}
+            )
             .onTapGesture(count: 2) {
                 center = Point(x: 0, y: 0)
+                xScale = 20
                 update(graphSize: geometry.size)
             }
         }
