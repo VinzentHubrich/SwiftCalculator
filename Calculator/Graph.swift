@@ -123,6 +123,7 @@ struct Graph: View {
             .foregroundStyle(.white)
             .clipShape(Rectangle())
             .onChange(of: expression, initial: true) { update(graphSize: geometry.size) }
+            .onChange(of: geometry.size) { update(graphSize: geometry.size) }
             .gesture(
                 DragGesture()
                     .onChanged { gesture in
