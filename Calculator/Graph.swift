@@ -45,24 +45,12 @@ struct Graph: View {
     }
     
     private func calculatePoints() {
-        var expr: [String] = expression.map { String($0) }
-        
-        // Insert * operation before x if necessary
-        while let index = expr.firstIndex(where: { $0 == "x" }) {
-            if index > 0 && shouldInsertMultiplicationToken(expr[index-1]) {
-                expr[index] = "*X"
-            } else {
-                expr[index] = "X"
-            }
-        }
-        
-        // Calculate values
         var values: [Point] = []
         
         for step in Array(stride(from: domainX.first!, through: domainX.last!, by: frequency)) {
             let x = round(step * 1000) / 1000.0
             
-            let result = evaluateMathExpression(String(expr.joined()).replacingOccurrences(of: "X", with: String(x)))
+            let result = evaluateMathExpression(expression, x: x)
             
             if result == nil || result == "nan" {
                 values.append(Point(x: x, y: Double.nan))

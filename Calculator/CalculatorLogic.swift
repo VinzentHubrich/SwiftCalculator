@@ -15,9 +15,9 @@ struct Calculation: Identifiable {
 
 var history: [Calculation] = []
 
-public func evaluateMathExpression(_ expression: String) -> String? {
+public func evaluateMathExpression(_ expression: String, x: Double = Double.nan) -> String? {
     // Step 1: Tokenize the expression
-    let tokens = tokenize(expression)
+    let tokens = tokenize(expression, x)
 
     // Step 2: Parse and evaluate the expression
     let result = parseAndEvaluate(tokens)
@@ -25,7 +25,7 @@ public func evaluateMathExpression(_ expression: String) -> String? {
     return result
 }
 
-private func tokenize(_ expression: String) -> [String] {
+private func tokenize(_ expression: String, _ x: Double) -> [String] {
     var tokens: [String] = []
     var currentToken = ""
 
@@ -40,7 +40,7 @@ private func tokenize(_ expression: String) -> [String] {
             currentToken.append(char)
         } else if char == "-" && currentToken.isEmpty && tokens.isEmpty {
             currentToken.append(char)
-        } else if char == "-" && currentToken.isEmpty && !tokens.isEmpty && Double(tokens.last!) == nil && tokens.last! != ")" {
+        } else if char == "-" && currentToken.isEmpty && (tokens.isEmpty || (!tokens.isEmpty && Double(tokens.last!) == nil && tokens.last! != ")")) {
             currentToken.append(char)
         } else {
             if !currentToken.isEmpty && currentToken.first != "<" {
@@ -63,6 +63,11 @@ private func tokenize(_ expression: String) -> [String] {
                     tokens.append("*")
                 }
                 tokens.append(history.last?.result ?? "0")
+            } else if char == "x" {
+                if !tokens.isEmpty && shouldInsertMultiplicationToken(tokens.last!) {
+                    tokens.append("*")
+                }
+                tokens.append(String(x))
             } else if char == "<" {
                 currentToken.append(char)
             } else if char == ">" {
@@ -134,7 +139,19 @@ private func parseAndEvaluate(_ tokens: [String]) -> String? {
         tks[elemFuncIndex] = elemFuncResult!
     }
     
-    // 3. Evaluate operations (ordered)
+    // 3. Resolve negation
+    for token in tks.enumerated().reversed() where token.element == "-" {
+        if token.offset - 1 < 0 || (token.offset - 1 >= 0 && Double(tks[token.offset - 1]) == nil) {
+            if token.offset + 1 < tks.count {
+                if let number = Double(tks[token.offset + 1]) {
+                    tks.remove(at: token.offset + 1)
+                    tks[token.offset] = String(-number)
+                }
+            }
+        }
+    }
+    
+    // 4. Evaluate operations (ordered)
     while let op = tks.enumerated().first(where: { $0.element == "^" }) ?? tks.enumerated().first(where: { $0.element == "*" || $0.element == "/" }) ?? tks.enumerated().first(where: { isOperator($0.element) }) {
         
         if op.offset - 1 < 0 || op.offset + 1 > tks.count - 1 {
@@ -155,7 +172,7 @@ private func parseAndEvaluate(_ tokens: [String]) -> String? {
     
     if tks.isEmpty { return nil } // no result
     
-    // 4. Return result
+    // 5. Return result
     return Double(tks.first!) == nil ? nil : tks.first
 }
 
@@ -214,5 +231,5 @@ private func applyElementaryFunction(function: String, _ parameter: String) -> S
 }
 
 func shouldInsertMultiplicationToken(_ lastToken: String) -> Bool {
-    !isOperator(lastToken) && lastToken != ">" && lastToken != "("
+    !isOperator(lastToken) && !isElementaryFunction(lastToken) && lastToken != "("
 }
