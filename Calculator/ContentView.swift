@@ -76,7 +76,10 @@ struct ContentView: View {
             return withAnimation(Animation.bouncy(duration: 0.3), { self.shakeExpression.toggle() })
         }
         
-        history.append(Calculation(expression: expression, result: String(format: "%g", Double(result!)!)))
+        if history.last?.expression != expression {
+            history.append(Calculation(expression: expression, result: String(format: "%g", Double(result!)!)))
+        }
+        
         expression = String(format: "%g", Double(result!)!)
         displayingResult = true
     }
@@ -253,11 +256,19 @@ struct ContentView: View {
                             VStack {
                                 HStack {
                                     Text(formatExpression(calculation.expression))
+                                        .onTapGesture {
+                                            expression = calculation.expression
+                                            showHistory = false
+                                        }
                                     Spacer()
                                 }
                                 HStack {
                                     Spacer()
                                     Text(formatExpression(calculation.result))
+                                        .onTapGesture {
+                                            expression = calculation.result
+                                            showHistory = false
+                                        }
                                 }
                                 if calculation.id != history.first?.id {
                                     Divider()
